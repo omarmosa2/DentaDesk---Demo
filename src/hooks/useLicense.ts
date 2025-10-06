@@ -38,9 +38,9 @@ interface LicenseState {
 
 export function useLicense() {
   const [licenseState, setLicenseState] = useState<LicenseState>({
-    isLicenseValid: false,
-    isFirstRun: true,
-    isLoading: true,
+    isLicenseValid: true, // Always valid in web/demo mode
+    isFirstRun: false, // Never first run in web/demo mode
+    isLoading: false, // No loading needed
     error: null,
     licenseData: null,
     machineInfo: null
@@ -317,12 +317,12 @@ export function useLicense() {
   }, [checkLicenseStatus, getMachineInfo, getLicenseInfo])
 
   /**
-   * Initialize license checking on mount
+   * Initialize license checking on mount - simplified for web/demo mode
    */
   useEffect(() => {
-    console.log('🔐 Initializing license hook...')
-    refreshLicenseStatus()
-  }, [refreshLicenseStatus])
+    console.log('🔐 License hook initialized - Web/Demo mode')
+    // No need to check license in web/demo mode
+  }, [])
 
   /**
    * Validate license key format

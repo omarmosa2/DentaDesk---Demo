@@ -12,7 +12,6 @@ import { enhanceKeyboardEvent } from '@/utils/arabicKeyboardMapping'
 import logger from './utils/logger'
 import SplashScreen from './components/SplashScreen'
 import LoginScreen from './components/auth/LoginScreen'
-import LicenseEntryScreen from './components/auth/LicenseEntryScreen'
 import AddPatientDialog from './components/patients/AddPatientDialog'
 import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
 import AddAppointmentDialog from './components/AddAppointmentDialog'
@@ -106,9 +105,7 @@ function AppContent() {
     isLicenseValid,
     isFirstRun,
     isLoading: licenseLoading,
-    error: licenseError,
-    machineInfo,
-    activateLicense
+    error: licenseError
   } = useLicense()
   // Custom hooks (always in same order)
   useRealTimeSync()
@@ -469,42 +466,6 @@ function AppContent() {
     }
   }
 
-  const handleLicenseActivation = async (licenseKey: string): Promise<{ success: boolean; error?: string }> => {
-    try {
-      logger.license('Handling license activation...')
-      const result = await activateLicense(licenseKey)
-
-      if (result.success) {
-        logger.success('License activated successfully')
-        toast({
-          title: 'نجح التفعيل',
-          description: 'تم تفعيل الترخيص بنجاح',
-          variant: 'default',
-        })
-      } else {
-        logger.failure('License activation failed:', result.error)
-        toast({
-          title: 'فشل التفعيل',
-          description: result.error || 'فشل في تفعيل الترخيص',
-          variant: 'destructive',
-        })
-      }
-
-      return result
-    } catch (error) {
-      logger.error('License activation error:', error)
-      const errorMessage = 'حدث خطأ أثناء تفعيل الترخيص'
-      toast({
-        title: 'خطأ',
-        description: errorMessage,
-        variant: 'destructive',
-      })
-      return {
-        success: false,
-        error: errorMessage
-      }
-    }
-  }
 
   // Show splash screen on first load only
   if (showSplash) {
@@ -592,25 +553,11 @@ function AppContent() {
     )
   }
 
-  // CRITICAL: Show license entry screen if license is invalid or first run
-  // This must come BEFORE authentication check to ensure license is validated first
-  // Skip license check in demo mode
-  const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : 
-    (import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.MODE === 'development')
-  
-  if (!isDemoMode && (!isLicenseValid || isFirstRun)) {
-    return (
-      <LicenseEntryScreen
-        onActivate={handleLicenseActivation}
-        isLoading={licenseLoading}
-        machineInfo={machineInfo || undefined}
-      />
-    )
-  }
+  // License check is now handled automatically in demo mode
+  // No need to show license entry screen
 
   // Show login screen if password is enabled and user is not authenticated
-  // This only shows AFTER license is validated
-  if (!isDemoMode && passwordEnabled && !isAuthenticated) {
+  if (passwordEnabled && !isAuthenticated) {
     return <LoginScreen onLogin={handleLogin} isLoading={loginLoading} />
   }
 
@@ -712,13 +659,6 @@ function AppContent() {
       {/* ✅ Right Side - التاريخ والساعة */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-300 bg-accent/20 dark:bg-gray-700/50 px-4 py-1 rounded-full font-mono">
         <LiveDateTime />
-        {/* Demo Mode Indicator */}
-        {isDemoMode && (
-          <div className="flex items-center space-x-2 space-x-reverse px-3 py-1 bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 rounded-full text-sm font-medium">
-            <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
-            <span>وضع تجريبي</span>
-          </div>
-        )}
       </div>
 
 
