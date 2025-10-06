@@ -86,7 +86,7 @@ export default defineConfig({
     // ✅ إضافة متغيرات بيئة مفيدة
     __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
     // ✅ إضافة متغير الوضع التجريبي
-    __DEMO_MODE__: JSON.stringify(process.env.VITE_DEMO_MODE === 'true'),
+    __DEMO_MODE__: JSON.stringify(process.env.VITE_DEMO_MODE === 'true' || process.env.NODE_ENV === 'development'),
   },
   // ✅ تحسين الأداء
   optimizeDeps: {

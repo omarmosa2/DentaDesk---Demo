@@ -595,7 +595,8 @@ function AppContent() {
   // CRITICAL: Show license entry screen if license is invalid or first run
   // This must come BEFORE authentication check to ensure license is validated first
   // Skip license check in demo mode
-  const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : false
+  const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : 
+    (import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.MODE === 'development')
   
   if (!isDemoMode && (!isLicenseValid || isFirstRun)) {
     return (

@@ -6,6 +6,9 @@
   "framework": "vite",
   "cleanUrls": true,
   "trailingSlash": false,
+  "env": {
+    "VITE_DEMO_MODE": "true"
+  },
   "rewrites": [
     {
       "source": "/((?!assets/).*)",
