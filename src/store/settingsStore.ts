@@ -130,7 +130,8 @@ export const useSettingsStore = create<SettingsStore>()(
             const apiStartTime = performance.now()
             
             // Check if we're in demo mode
-            const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : false
+            const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : 
+              (import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.MODE === 'development')
             
             let settings: any
             
@@ -152,17 +153,37 @@ export const useSettingsStore = create<SettingsStore>()(
             } else {
               // Check if electronAPI is available
               if (!window.electronAPI || !window.electronAPI.settings || !window.electronAPI.settings.get) {
-                throw new Error('electronAPI.settings.get is not available')
-              }
-              
-              // Add timeout to prevent hanging
-              const settingsPromise = window.electronAPI.settings.get()
-              const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Settings loading timeout after 10 seconds')), 10000)
-              )
+                // Fallback to localStorage for web environment
+                logger.debug('Settings Store: electronAPI not available, using localStorage fallback')
+                const storedSettings = localStorage.getItem('dental-clinic-settings')
+                if (storedSettings) {
+                  settings = JSON.parse(storedSettings)
+                } else {
+                  // Use default settings for web
+                  settings = {
+                    clinic_name: 'عيادة الأسنان',
+                    clinic_address: 'العنوان',
+                    clinic_phone: '123-456-7890',
+                    clinic_email: 'info@dentalclinic.com',
+                    currency: 'USD',
+                    language: 'ar',
+                    useArabicNumerals: false,
+                    whatsapp_reminder_hours_before: 3,
+                    whatsapp_reminder_minutes_before: 0,
+                    whatsapp_reminder_custom_enabled: false,
+                    isLoaded: true
+                  }
+                }
+              } else {
+                // Add timeout to prevent hanging
+                const settingsPromise = window.electronAPI.settings.get()
+                const timeoutPromise = new Promise((_, reject) =>
+                  setTimeout(() => reject(new Error('Settings loading timeout after 10 seconds')), 10000)
+                )
 
-              logger.debug('Settings Store: About to call window.electronAPI.settings.get()')
-              settings = await Promise.race([settingsPromise, timeoutPromise])
+                logger.debug('Settings Store: About to call window.electronAPI.settings.get()')
+                settings = await Promise.race([settingsPromise, timeoutPromise])
+              }
             }
             
             logger.debug('Settings Store: Received settings from electronAPI:', {
@@ -284,7 +305,8 @@ export const useSettingsStore = create<SettingsStore>()(
           set({ isLoading: true, error: null })
           try {
             // Check if we're in demo mode
-            const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : false
+            const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : 
+              (import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.MODE === 'development')
             
             let updatedSettings: any
             
@@ -296,7 +318,21 @@ export const useSettingsStore = create<SettingsStore>()(
                 isLoaded: true
               }
             } else {
-              updatedSettings = await window.electronAPI.settings.update(settingsData)
+              // Check if electronAPI is available
+              if (!window.electronAPI || !window.electronAPI.settings || !window.electronAPI.settings.update) {
+                // Fallback to localStorage for web environment
+                logger.debug('Settings Store: electronAPI not available, using localStorage fallback for update')
+                const currentSettings = get().settings || {}
+                updatedSettings = {
+                  ...currentSettings,
+                  ...settingsData,
+                  isLoaded: true
+                }
+                // Save to localStorage
+                localStorage.setItem('dental-clinic-settings', JSON.stringify(updatedSettings))
+              } else {
+                updatedSettings = await window.electronAPI.settings.update(settingsData)
+              }
             }
             
             set({

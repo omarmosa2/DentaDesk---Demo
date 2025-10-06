@@ -4,12 +4,16 @@ import App from './App.tsx'
 import './App.css'
 import './styles/globals.css'
 import { initGlobalErrorHandler } from './utils/globalErrorHandler'
+import { initializeWebFallbacks } from './utils/web-fallbacks'
 
 // ✅ معالج الأخطاء الشامل لـ React
 console.log('🚀 Starting React application...')
 
 // Initialize global error handler
 initGlobalErrorHandler()
+
+// Initialize web fallbacks for Electron APIs
+initializeWebFallbacks()
 
 // Additional safety measures
 if (typeof window !== 'undefined') {
