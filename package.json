@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "start": "vite preview --port 3000 --host",
     "electron:dev": "concurrently \"npm run dev\" \"cross-env NODE_ENV=development electron .\"",
     "electron": "electron .",
     "electron:build": "npm run build && electron .",
@@ -20,7 +21,10 @@
     "dist:mac": "npm run build && electron-builder --mac",
     "dist:linux": "npm run build && electron-builder --linux",
     "demo": "cross-env VITE_DEMO_MODE=true vite",
-    "demo:electron": "concurrently \"npm run demo\" \"cross-env NODE_ENV=development VITE_DEMO_MODE=true electron .\""
+    "demo:electron": "concurrently \"npm run demo\" \"cross-env NODE_ENV=development VITE_DEMO_MODE=true electron .\"",
+    "vercel-build": "npm run build",
+    "deploy": "npm run build && vercel --prod",
+    "deploy:preview": "npm run build && vercel"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
