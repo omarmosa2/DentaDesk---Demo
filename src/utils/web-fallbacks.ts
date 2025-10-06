@@ -132,6 +132,65 @@ export const createWebElectronAPI = () => {
         localStorage.setItem('whatsapp-settings', JSON.stringify(settings))
         return settings
       }
+    },
+    license: {
+      checkStatus: async () => {
+        const stored = localStorage.getItem('dental-license')
+        if (stored) {
+          const license = JSON.parse(stored)
+          return {
+            isValid: true,
+            isFirstRun: false,
+            licenseData: license
+          }
+        }
+        return {
+          isValid: true,
+          isFirstRun: false,
+          licenseData: {
+            license: 'WEB-DEMO-LICENSE',
+            activated: true,
+            hwid: 'web-demo-hwid',
+            timestamp: Date.now()
+          }
+        }
+      },
+      getMachineInfo: async () => {
+        return {
+          hwid: 'web-demo-hwid',
+          platform: 'web',
+          arch: 'browser'
+        }
+      },
+      getLicenseInfo: async () => {
+        const stored = localStorage.getItem('dental-license')
+        if (stored) {
+          return JSON.parse(stored)
+        }
+        return {
+          license: 'WEB-DEMO-LICENSE',
+          activated: true,
+          hwid: 'web-demo-hwid',
+          timestamp: Date.now()
+        }
+      },
+      activate: async (licenseKey: string) => {
+        const licenseData = {
+          license: licenseKey,
+          activated: true,
+          hwid: 'web-demo-hwid',
+          timestamp: Date.now()
+        }
+        localStorage.setItem('dental-license', JSON.stringify(licenseData))
+        return {
+          success: true,
+          licenseData
+        }
+      },
+      clearData: async () => {
+        localStorage.removeItem('dental-license')
+        return { success: true }
+      }
     }
   }
 }

@@ -54,7 +54,8 @@ export function useLicense() {
       console.log('🔐 Checking license status...')
       
       // Check if we're in demo mode
-      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : false
+      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : 
+        (import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.MODE === 'development')
       
       if (isDemoMode) {
         console.log('🎭 Demo Mode: License validation bypassed')
@@ -72,7 +73,19 @@ export function useLicense() {
       }
       
       if (!window.electronAPI?.license?.checkStatus) {
-        throw new Error('License API not available')
+        // Fallback for web environment
+        console.log('🌐 Web environment: Using fallback license check')
+        return {
+          isValid: true,
+          error: null,
+          isFirstRun: false,
+          licenseData: {
+            license: 'WEB-DEMO-LICENSE',
+            activated: true,
+            hwid: 'web-demo-hwid',
+            timestamp: Date.now()
+          }
+        }
       }
 
       const result = await window.electronAPI.license.checkStatus()
@@ -97,7 +110,8 @@ export function useLicense() {
       console.log('🔐 Getting machine info...')
       
       // Check if we're in demo mode
-      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : false
+      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : 
+        (import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.MODE === 'development')
       
       if (isDemoMode) {
         console.log('🎭 Demo Mode: Machine info bypassed')
@@ -109,7 +123,13 @@ export function useLicense() {
       }
       
       if (!window.electronAPI?.license?.getMachineInfo) {
-        throw new Error('License API not available')
+        // Fallback for web environment
+        console.log('🌐 Web environment: Using fallback machine info')
+        return {
+          hwid: 'web-demo-hwid',
+          platform: 'web',
+          arch: 'browser'
+        }
       }
 
       const result = await window.electronAPI.license.getMachineInfo()
@@ -135,7 +155,8 @@ export function useLicense() {
       console.log('🔐 Activating license...')
       
       // Check if we're in demo mode
-      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : false
+      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : 
+        (import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.MODE === 'development')
       
       if (isDemoMode) {
         console.log('🎭 Demo Mode: License activation bypassed')
@@ -184,7 +205,8 @@ export function useLicense() {
       console.log('🔐 Getting license info...')
       
       // Check if we're in demo mode
-      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : false
+      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : 
+        (import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.MODE === 'development')
       
       if (isDemoMode) {
         console.log('🎭 Demo Mode: License info bypassed')
@@ -197,7 +219,14 @@ export function useLicense() {
       }
       
       if (!window.electronAPI?.license?.getLicenseInfo) {
-        throw new Error('License API not available')
+        // Fallback for web environment
+        console.log('🌐 Web environment: Using fallback license info')
+        return {
+          license: 'WEB-DEMO-LICENSE',
+          activated: true,
+          hwid: 'web-demo-hwid',
+          timestamp: Date.now()
+        }
       }
 
       const result = await window.electronAPI.license.getLicenseInfo()
@@ -218,7 +247,8 @@ export function useLicense() {
       console.log('🔐 Clearing license data...')
       
       // Check if we're in demo mode
-      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : false
+      const isDemoMode = typeof __DEMO_MODE__ !== 'undefined' ? __DEMO_MODE__ : 
+        (import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.MODE === 'development')
       
       if (isDemoMode) {
         console.log('🎭 Demo Mode: License data clear bypassed')
