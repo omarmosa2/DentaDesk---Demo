@@ -15,7 +15,7 @@ export default defineConfig({
     emptyOutDir: true,
     chunkSizeWarningLimit: 1000,
     assetsDir: 'assets',
-    sourcemap: process.env.NODE_ENV === 'development', // ✅ تفعيل sourcemap للتشخيص فقط في وضع التطوير
+    sourcemap: false, // ✅ إيقاف sourcemap للإنتاج
     minify: 'terser',
     target: 'esnext', // ✅ تحسين التوافق
     commonjsOptions: {
